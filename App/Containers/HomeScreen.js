@@ -4,9 +4,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { AuthContext } from '../Contexts/AuthContext'
 
-function HomeScreen({ navigation }) {
-
-  const { signOut } = React.useContext(AuthContext);
+function HomeScreen ({ navigation }) {
+  const { signOut, state } = React.useContext(AuthContext)
 
   const logout = async () => {
     try {
@@ -19,7 +18,7 @@ function HomeScreen({ navigation }) {
 
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>Home Screen</Text>
+      <Text>Yo {state.user.username} !!</Text>
       <Button
         title='Go to Screen2'
         onPress={() => navigation.navigate('Screen2')} />

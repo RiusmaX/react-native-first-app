@@ -18,6 +18,8 @@ const MUTATION_LOGIN = gql`
       jwt
       user {
         id
+        email
+        username
       }
     }
   }
@@ -31,7 +33,7 @@ const storeToken = async token => {
   }
 }
 
-const Login = () => {
+const Login = ({ navigation }) => {
   const [username, setUsername] = React.useState('cacahouette72@gmail.com')
   const [password, setPassword] = React.useState('lat345at')
 
@@ -47,7 +49,7 @@ const Login = () => {
     },
     onCompleted: async (result) => {
       await storeToken(result.login.jwt)
-      signIn(result.login.jwt)
+      signIn(result.login)
     },
     onError: (error) => {
       console.error(error)
@@ -77,6 +79,12 @@ const Login = () => {
         onPress={() => {
           console.log(`LOGIN : ${username} ${password}`)
           login()
+        }}
+      />
+      <Button
+        title='Create an account'
+        onPress={() => {
+          navigation.navigate('Register')
         }}
       />
     </View>

@@ -51,26 +51,30 @@ const App: () => React$Node = () => {
           return {
             ...prevState,
             userToken: action.token,
-            isLoading: false
+            isLoading: false,
+            user: action.user
           }
         case 'SIGN_IN':
           return {
             ...prevState,
             isSignout: false,
-            userToken: action.token
+            userToken: action.token,
+            user: action.user
           }
         case 'SIGN_OUT':
           return {
             ...prevState,
             isSignout: true,
-            userToken: null
+            userToken: null,
+            user: null
           }
       }
     },
     {
       isLoading: true,
       isSignout: false,
-      userToken: null
+      userToken: null,
+      user: null
     }
   )
 
@@ -94,13 +98,14 @@ const App: () => React$Node = () => {
     () => ({
       signIn: async data => {
         // Mise à jour de l'action SIGN_IN
-        dispatch({ type: 'SIGN_IN', token: data})
+        dispatch({ type: 'SIGN_IN', token: data.jwt, user: data.user })
       },
       signOut: () => dispatch({ type: 'SIGN_OUT' }),
       signUp: async data => {
         // Enregistrement d'un utilisateur
-        dispatch({ type: 'SIGN_IN', token: 'fake-token'})
-      }
+        dispatch({ type: 'SIGN_IN', token: data.jwt, user: data.user })
+      },
+      state
     }),
     []
   )
