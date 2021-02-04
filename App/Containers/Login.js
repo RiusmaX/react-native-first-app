@@ -1,11 +1,14 @@
 import * as React from 'react'
-import {View, Text, TextInput, Button} from 'react-native'
+import { View, Text, TextInput, Button } from 'react-native'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+
+import { AuthContext } from '../Contexts/AuthContext'
 
 import { gql, useMutation } from '@apollo/client'
 
 import styles from './Styles/LoginStyle'
 
-import {darkTheme} from '../Theme/Colors'
+import { darkTheme } from '../Theme/Colors'
 
 const MUTATION_LOGIN = gql`
   mutation LoginMutation(
@@ -15,15 +18,24 @@ const MUTATION_LOGIN = gql`
       jwt
       user {
         id
-        email
       }
     }
   }
 `
 
+const storeToken = async token => {
+  try {
+    await AsyncStorage.setItem('userToken', token)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 const Login = () => {
   const [username, setUsername] = React.useState('cacahouette72@gmail.com')
   const [password, setPassword] = React.useState('lat345at')
+
+  const { signIn } = React.useContext(AuthContext);
 
   const [login] = useMutation(MUTATION_LOGIN, {
     variables: {
@@ -33,8 +45,9 @@ const Login = () => {
         provider: 'local'
       }
     },
-    onCompleted: (result) => {
-      console.log(result)
+    onCompleted: async (result) => {
+      await storeToken(result.login.jwt)
+      signIn(result.login.jwt)
     },
     onError: (error) => {
       console.error(error)

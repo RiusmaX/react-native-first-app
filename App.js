@@ -23,15 +23,18 @@ import {
 
 import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 
-
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import HomeScreen from './App/Containers/HomeScreen'
 import Screen2 from './App/Containers/Screen2'
 
 import LoginScreen from './App/Containers/Login'
 import RegisterScreen from './App/Containers/Register'
+
+import { AuthContext } from './App/Contexts/AuthContext'
 
 const Stack = createStackNavigator()
 
@@ -41,13 +44,74 @@ const client = new ApolloClient({
 })
 
 const App: () => React$Node = () => {
-  const isLoggedIn = false
+  const [state, dispatch] = React.useReducer(
+    (prevState, action) => {
+      switch(action.type) {
+        case 'RESTORE_TOKEN':
+          return {
+            ...prevState,
+            userToken: action.token,
+            isLoading: false
+          }
+        case 'SIGN_IN':
+          return {
+            ...prevState,
+            isSignout: false,
+            userToken: action.token
+          }
+        case 'SIGN_OUT':
+          return {
+            ...prevState,
+            isSignout: true,
+            userToken: null
+          }
+      }
+    },
+    {
+      isLoading: true,
+      isSignout: false,
+      userToken: null
+    }
+  )
+
+  // Equivalent à un DidMount ou un WillMount
+  React.useEffect(() => {
+    const bootstrapAsync = async () => {
+      let userToken
+      try {
+        userToken = await AsyncStorage.getItem('userToken')
+      } catch (error) {
+        console.error(error)
+      }
+
+      dispatch({ type: 'RESTORE_TOKEN', token: userToken})
+    }
+
+    bootstrapAsync()
+  }, [])
+
+  const authContext = React.useMemo(
+    () => ({
+      signIn: async data => {
+        // Mise à jour de l'action SIGN_IN
+        dispatch({ type: 'SIGN_IN', token: data})
+      },
+      signOut: () => dispatch({ type: 'SIGN_OUT' }),
+      signUp: async data => {
+        // Enregistrement d'un utilisateur
+        dispatch({ type: 'SIGN_IN', token: 'fake-token'})
+      }
+    }),
+    []
+  )
+
   return (
+  <AuthContext.Provider value={authContext}>
     <ApolloProvider client={client}>
       <NavigationContainer>
         <StatusBar barStyle="light-content" />
         {
-          isLoggedIn
+          state.userToken
           ? (
             <Stack.Navigator>
               <Stack.Screen name='Home Screen' component={HomeScreen}/>
@@ -63,6 +127,7 @@ const App: () => React$Node = () => {
         }
       </NavigationContainer>
     </ApolloProvider>
+  </AuthContext.Provider>
   );
 };
 
