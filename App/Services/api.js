@@ -30,7 +30,28 @@ const getNotes = async () => {
   }
 }
 
+const createNote = async (note) => {
+  const token = await getToken()
+  if (token) {
+    try {
+      const response = await axios(`${API_URL}/notes`, {
+        method: 'POST',
+        headers: {
+          Authorization: 'Bearer ' + token,
+          'Content-Type': 'application/json',
+          Accept: 'application/json'
+        },
+        data: JSON.stringify(note)
+      })
+      return response.data
+    } catch (error) {
+      console.error(error)
+    }
+  }
+}
+
 module.exports = {
   API_URL,
-  getNotes
+  getNotes,
+  createNote
 }

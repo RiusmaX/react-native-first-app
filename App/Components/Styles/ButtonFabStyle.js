@@ -16,6 +16,7 @@ export default StyleSheet.create({
   },
   text: {
     color: darkTheme.text,
-    fontSize: 45
+    fontSize: 40,
+    lineHeight: 50
   }
 })
