@@ -20,8 +20,8 @@ function HomeScreen ({ navigation }) {
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       <Text>Yo {state && state.user ? state.user.username : 'null'} !!</Text>
       <Button
-        title='Go to Screen2'
-        onPress={() => navigation.navigate('Screen2')} />
+        title='Go to NotesScreen'
+        onPress={() => navigation.navigate('NotesScreen')} />
       <Button
         title='Logout'
         onPress={() => logout()} />
