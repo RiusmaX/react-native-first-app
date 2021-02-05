@@ -31,5 +31,6 @@ const getNotes = async () => {
 }
 
 module.exports = {
+  API_URL,
   getNotes
 }
